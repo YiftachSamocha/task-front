@@ -5,7 +5,7 @@ export const taskService = {
     getById,
     save,
     remove,
-    addtaskMsg
+    performTask
 }
 
 async function query(filterBy) {
@@ -32,6 +32,11 @@ async function save(task) {
 async function addtaskMsg(taskId, txt) {
     const savedMsg = await httpService.post(`task/${taskId}/msg`, { txt })
     return savedMsg
+}
+
+async function performTask(task) {
+    const savedTask = await httpService.put(`task/start`, task)
+    return savedTask
 }
 
 export function getEmptyFilter() {

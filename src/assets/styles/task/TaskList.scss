@@ -1,16 +1,78 @@
 .task-list {
     padding: 1em;
+
     table {
         width: 100%;
         border-collapse: collapse;
 
-       
-        tr:nth-child(even){
+
+        tr:nth-child(even) {
             background-color: #F0F8FE;
         }
+
         .table-header {
             background-color: #5588A4;
             color: white;
+        }
+
+        td {
+            button {
+                color: white;
+                border: 0;
+                padding: 0.3em;
+                margin-inline: 0.2em;
+                border-radius: 5px;
+                font-size: 1em;
+                cursor: pointer;
+            }
+
+            .edit, .save {
+                background-color: #007FFE;
+            }
+
+            .start {
+                background-color: #2DA347;
+            }
+
+            .done {
+                color: #2DA347;
+            }
+
+            .delete {
+                background-color: #DE3449;
+            }
+
+            .failed {
+                color: #DE3449;
+            }
+
+            .running {
+                color: #FFBD07;
+            }
+            td:has(.loader){
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .loader {
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #3498db;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
         }
     }
 
@@ -19,26 +81,32 @@
     td {
         border: 1px solid #DDDDDD;
     }
-    th, td{
+
+    th,
+    td {
         padding: 0.5em;
         text-align: center;
     }
-    .detailed-task{
+
+    .detailed-task {
         padding: 1em;
         background-color: #DDDDDD;
         width: 100%;
-        h4{
+
+        h4 {
             margin: 0;
         }
-        
-        p{
+
+        p {
             margin-block: 0;
-           
+
         }
-        .info{
-           margin-top: 0.5em;
+
+        .info {
+            margin-top: 0.5em;
             font-weight: 100;
-            span{
+
+            span {
                 margin-right: 0.5em;
 
             }

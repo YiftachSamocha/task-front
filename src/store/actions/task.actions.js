@@ -66,6 +66,17 @@ export async function addTaskMsg(taskId, txt) {
     }
 }
 
+export async function onPerformTask(task){
+    try {
+        const savedTask = await taskService.performTask(task)
+        store.dispatch(getCmdUpdateTask(savedTask))
+        return savedTask
+    } catch (err) {
+        console.log('Cannot save task', err)
+        throw err
+    }
+}
+
 // Command Creators:
 function getCmdSetTasks(tasks) {
     return {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { addTask, loadTasks, updateTask } from "../store/actions/task.actions"
+import { addTask, loadTasks, onPerformTask, removeTask, updateTask } from "../store/actions/task.actions"
 
 export function TaskList() {
     const tasks = useSelector(state => state.taskModule.tasks)
@@ -9,6 +9,7 @@ export function TaskList() {
     const [saveType, setSaveType] = useState('none')
     const [editedTask, setEditedTask] = useState(null)
     const [content, setContent] = useState({ title: '', importance: 1 })
+    const [runningTasks, setRunningTasks] = useState([])
     const isAdd = useSelector(state => state.taskModule.isAdd)
 
     useEffect(() => {
@@ -66,7 +67,7 @@ export function TaskList() {
                 doneAt: null,
                 errors: [],
             }
-           await addTask(taskToAdd)
+            await addTask(taskToAdd)
         }
 
         await loadTasks(filterBy)
@@ -79,6 +80,15 @@ export function TaskList() {
         setSaveType('edit')
     }
 
+    async function doTask(task) {
+        let newRunningTasks = [...runningTasks, task._id]
+        setRunningTasks(newRunningTasks)
+        await onPerformTask(task)
+        await loadTasks(filterBy)
+        newRunningTasks = newRunningTasks.filter(taskId => taskId !== task._id)
+        setRunningTasks(newRunningTasks)
+    }
+
     return <section className="task-list">
         <table>
             <tr className="table-header">
@@ -87,6 +97,7 @@ export function TaskList() {
                 <th>Status</th>
                 <th>Tries Count</th>
                 <th>Actions</th>
+                <th>Execuate</th>
             </tr>
             {tasks.map(task => {
                 if (isShown(task, shownTasks)) {
@@ -108,9 +119,23 @@ export function TaskList() {
                 else return <tr >
                     <td onClick={() => showTask(task._id)}>{task.title}</td>
                     <td>{task.importance}</td>
-                    <td>{task.status}</td>
+                    <td>{runningTasks.includes(task._id) ?
+                        <span className="running">Running</span>
+                        : <span className={task.status}>{task.status}</span>}</td>
                     <td>{task.triesCount}</td>
-                    <td><button onClick={() => onSetEditedTask(task)}>Edit</button></td>
+                    <td>
+                        <button onClick={() => onSetEditedTask(task)} className="edit">Edit</button>
+                        <button onClick={() => removeTask(task._id)} className="delete" >Delete</button>
+                    </td>
+                    <td>
+                        {runningTasks.includes(task._id)
+                            ? <div className="loader"></div>
+                            : <div>
+                                {task.status === 'failed' && <button onClick={() => doTask(task)} className="start">Retry</button>}
+                                {task.status === 'new' && <button onClick={() => doTask(task)} className="start">Start</button>}
+                            </div>}
+
+                    </td>
                 </tr>
             })}
             {saveType !== 'none' && <tr>
@@ -126,8 +151,9 @@ export function TaskList() {
                 </td>
                 <td></td>
                 <td></td>
+                <td></td>
                 <td>
-                    <button onClick={submitChanges}>Save</button>
+                    <button onClick={submitChanges} className="save">Save</button>
                 </td>
             </tr>}
 
