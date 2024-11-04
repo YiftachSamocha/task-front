@@ -74,8 +74,8 @@ export function TaskList() {
     }
 
     function onSetEditedTask(task) {
+        setContent({ title: task.title, importance: task.importance })
         setEditedTask(task)
-        setContent({ title: editedTask.title, importance: editedTask.importance })
         setSaveType('edit')
     }
 
