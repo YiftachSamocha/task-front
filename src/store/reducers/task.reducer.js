@@ -6,11 +6,13 @@ export const UPDATE_TASK = 'UPDATE_TASK'
 export const ADD_TASK_MSG = 'ADD_TASK_MSG'
 export const SET_FILTER_BY = 'SET_FILTER_BY'
 export const SET_IS_ADD = 'SET_IS_ADD'
+export const SET_IS_WORKER_ON = 'SET_IS_WORKER_ON'
 
 const initialState = {
     tasks: [],
     filterBy: {},
-    isAdd: false
+    isAdd: false,
+    isWorkerOn: false,
 }
 
 export function taskReducer(state = initialState, action) {
@@ -35,15 +37,15 @@ export function taskReducer(state = initialState, action) {
             tasks = state.tasks.map(task => (task._id === action.task._id) ? action.task : task)
             newState = { ...state, tasks }
             break
-        case ADD_TASK_MSG:
-            newState = { ...state, task: { ...state.task, msgs: [...state.task.msgs || [], action.msg] } }
-            break
         case SET_FILTER_BY:
             const newFilterBy = { ...action.filterBy }
             newState = { ...state, filterBy: newFilterBy }
             break
         case SET_IS_ADD:
             newState = { ...state, isAdd: true }
+            break
+        case SET_IS_WORKER_ON:
+            newState = { ...state, isWorkerOn: action.isWorkerOn }
             break
         default:
     }
@@ -52,28 +54,4 @@ export function taskReducer(state = initialState, action) {
 
 // unitTestReducer()
 
-function unitTestReducer() {
-    var state = initialState
-    const task1 = { _id: 'b101', vendor: 'Task ' + parseInt(Math.random() * 10), msgs: [] }
-    const task2 = { _id: 'b102', vendor: 'Task ' + parseInt(Math.random() * 10), msgs: [] }
-
-    state = taskReducer(state, { type: SET_TASKS, tasks: [task1] })
-    console.log('After SET_TASKS:', state)
-
-    state = taskReducer(state, { type: ADD_TASK, task: task2 })
-    console.log('After ADD_TASK:', state)
-
-    state = taskReducer(state, { type: UPDATE_TASK, task: { ...task2, vendor: 'Good' } })
-    console.log('After UPDATE_TASK:', state)
-
-    state = taskReducer(state, { type: REMOVE_TASK, taskId: task2._id })
-    console.log('After REMOVE_TASK:', state)
-
-    const msg = { id: 'm' + parseInt(Math.random() * 100), txt: 'Some msg' }
-    state = taskReducer(state, { type: ADD_TASK_MSG, taskId: task1._id, msg })
-    console.log('After ADD_TASK_MSG:', state)
-
-    state = taskReducer(state, { type: REMOVE_TASK, taskId: task1._id })
-    console.log('After REMOVE_TASK:', state)
-}
 

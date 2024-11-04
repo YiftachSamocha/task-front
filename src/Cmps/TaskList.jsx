@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addTask, loadTasks, onPerformTask, removeTask, updateTask } from "../store/actions/task.actions"
+import { SET_IS_WORKER_ON } from "../store/reducers/task.reducer"
 
 export function TaskList() {
     const tasks = useSelector(state => state.taskModule.tasks)
@@ -11,6 +12,8 @@ export function TaskList() {
     const [content, setContent] = useState({ title: '', importance: 1 })
     const [runningTasks, setRunningTasks] = useState([])
     const isAdd = useSelector(state => state.taskModule.isAdd)
+    const isWorkerOn = useSelector(state => state.taskModule.isWorkerOn)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (isAdd) {
@@ -23,6 +26,10 @@ export function TaskList() {
     useEffect(() => {
         loadTasks(filterBy)
     }, [filterBy])
+
+    useEffect(() => {
+        runWorker(0)
+    }, [isWorkerOn])
 
     function isShown(obj, ids) {
         return ids.includes(obj._id)
@@ -89,6 +96,45 @@ export function TaskList() {
         setRunningTasks(newRunningTasks)
     }
 
+    async function runWorker(idx) {
+        if (!isWorkerOn) return
+        var delay = 7000
+        try {
+            const task = tasks[idx]
+            if (task) {
+                try {
+                    if (task.status !== 'done') {
+                        await doTask(task)
+                    }
+                }
+                catch (err) {
+                    console.log(`Failed Task`, err)
+                }
+                finally {
+                    delay = 1
+                }
+            } else {
+                dispatch({ type: SET_IS_WORKER_ON, isWorkerOn: false })
+                console.log('Snoozing... no tasks to perform')
+            }
+        }
+        catch (err) {
+            console.log(`Failed getting next task to execute`, err)
+        }
+        finally {
+            setTimeout(() => runWorker(idx + 1), delay)
+        }
+    }
+
+    function formatDate(date) {
+        const dateToFormat = new Date(date)
+        return dateToFormat.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        })
+    }
+
     return <section className="task-list">
         <table>
             <tr className="table-header">
@@ -97,7 +143,7 @@ export function TaskList() {
                 <th>Status</th>
                 <th>Tries Count</th>
                 <th>Actions</th>
-                <th>Execuate</th>
+                <th>Execute</th>
             </tr>
             {tasks.map(task => {
                 if (isShown(task, shownTasks)) {
@@ -106,18 +152,19 @@ export function TaskList() {
                         <p>{task.description}</p>
                         <h4>Errors</h4>
                         <p>{task.errors.map(error => {
-                            return <span>{error},</span>
+                            if (error === task.errors[0]) return <span>{error}</span>
+                            return <span>, {error}</span>
                         })}</p>
                         <p className="info">
-                            Created at <span>{task.createdAt}</span>
-                            Last tried at <span>{task.lastTriedAt}</span>
-                            Done at <span>{task.doneAt}</span>
+                            Created at <span>{formatDate(task.createdAt)}</span>
+                            Last tried at <span>{formatDate(task.lastTriedAt)}</span>
+                            {task.doneAt && <span>Done at <span>{formatDate(task.doneAt)}</span></span>}
 
                         </p>
                     </div>
                 }
                 else return <tr >
-                    <td onClick={() => showTask(task._id)}>{task.title}</td>
+                    <td className="title" onClick={() => showTask(task._id)}>{task.title}</td>
                     <td>{task.importance}</td>
                     <td>{runningTasks.includes(task._id) ?
                         <span className="running">Running</span>
