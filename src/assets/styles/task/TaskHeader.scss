@@ -1,0 +1,39 @@
+.task-header{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 1em;
+    h1{
+        font-size: 1.7em;
+    }
+
+    .btns{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+
+        button{
+            color: white;
+            border: 0;
+            border-radius: 5px;
+            font-size: 1.2em;
+            padding: 0.5em;
+            cursor: pointer;
+        }
+        button:nth-of-type(1){
+            background-color: #007FFE;
+        }
+        button:nth-of-type(2){
+            background-color: #DE3449;
+        }
+        button:nth-of-type(3){
+            background-color: #2DA347;
+        }
+        button:nth-of-type(4){
+            background-color: #FFBD07;
+        }
+
+        
+
+    }
+}
