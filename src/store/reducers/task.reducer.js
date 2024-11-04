@@ -5,10 +5,12 @@ export const ADD_TASK = 'ADD_TASK'
 export const UPDATE_TASK = 'UPDATE_TASK'
 export const ADD_TASK_MSG = 'ADD_TASK_MSG'
 export const SET_FILTER_BY = 'SET_FILTER_BY'
+export const SET_IS_ADD = 'SET_IS_ADD'
 
 const initialState = {
     tasks: [],
-    filterBy: {}
+    filterBy: {},
+    isAdd: false
 }
 
 export function taskReducer(state = initialState, action) {
@@ -39,6 +41,10 @@ export function taskReducer(state = initialState, action) {
         case SET_FILTER_BY:
             const newFilterBy = { ...action.filterBy }
             newState = { ...state, filterBy: newFilterBy }
+            break
+        case SET_IS_ADD:
+            newState = { ...state, isAdd: true }
+            break
         default:
     }
     return newState
